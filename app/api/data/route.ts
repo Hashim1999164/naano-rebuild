@@ -6,7 +6,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const db = loadDb();
-  return NextResponse.json(publicState(db), {
-    headers: { "cache-control": "no-store" },
+  return new NextResponse(JSON.stringify(publicState(db), null, 2), {
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
   });
 }
