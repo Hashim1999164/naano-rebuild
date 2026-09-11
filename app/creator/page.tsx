@@ -34,6 +34,7 @@ export default function CreatorDashboard(){
     <Link href="/" className="naano-logo"><span className="logo-mark"><i/></span>naano <small className="rounded-full bg-[#eef1ff] px-2 py-1 text-[10px] tracking-normal text-[#315cff]">CREATOR</small></Link>
     <div className="flex items-center gap-3">
       <Link className="text-sm text-[#666]" href="/app">Brand view</Link>
+      <a href="/data/db.json" target="_blank" rel="noreferrer" className="wallet-chip">JSON</a>
       <button className="btn-white !px-3 !py-2 text-xs" onClick={async()=>{await api("/api/auth/logout",{}); await refresh(); location.href="/login"}}>Log out</button>
       <div className="grid h-9 w-9 place-items-center rounded-full bg-black text-xs text-white">{initials}</div>
     </div>
