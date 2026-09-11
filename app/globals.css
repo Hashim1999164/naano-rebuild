@@ -34,17 +34,31 @@ button, a { transition: all .18s ease; }
     radial-gradient(ellipse at 90% 85%,rgba(255,255,255,.96) 0 14%,transparent 38%),
     radial-gradient(ellipse at 49% 110%,white 0 26%,transparent 52%),
     linear-gradient(180deg,#d9efff 0%,#e9f5ff 56%,#fff 100%);
+  background-size: 120% 120%;
+  animation: skyShift 18s ease-in-out infinite alternate;
 }
+@keyframes skyShift {
+  from { background-position: 0% 0%; }
+  to { background-position: 100% 40%; }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+.fade-up { animation: fadeUp .8s cubic-bezier(.22,1,.36,1) both; }
+.fade-up-2 { animation: fadeUp .9s .12s cubic-bezier(.22,1,.36,1) both; }
+.fade-up-3 { animation: fadeUp .9s .22s cubic-bezier(.22,1,.36,1) both; }
 .naano-logo { display:flex; align-items:center; gap:8px; font-size:24px; font-weight:750; letter-spacing:-1.2px; }
 .logo-mark { width:29px; height:22px; position:relative; display:inline-block; }
 .logo-mark:before,.logo-mark:after { content:""; position:absolute; background:#111; border-radius:55% 45% 50% 50%; transform:rotate(-25deg); width:16px; height:21px; top:1px; }
 .logo-mark:before { left:1px; }.logo-mark:after { right:1px; transform:rotate(25deg); }
 .logo-mark i { position:absolute; width:4px; height:4px; border-radius:50%; background:#315cff; z-index:2; left:13px; top:5px; }
 
-.btn-black { background:#111; color:white; border:1px solid #111; border-radius:999px; padding:12px 20px; font-weight:650; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:10px; }
-.btn-black:hover { background:#303030; transform:translateY(-1px); }
+.btn-black { background:#111; color:white; border:1px solid #111; border-radius:999px; padding:12px 20px; font-weight:650; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 0 rgba(0,0,0,0); }
+.btn-black:hover { background:#303030; transform:translateY(-2px); box-shadow:0 10px 24px rgba(17,17,17,.18); }
+.btn-black:active { transform:translateY(0); }
 .btn-blue { background:#315cff; color:white; border:1px solid #315cff; border-radius:999px; padding:12px 20px; font-weight:650; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
-.btn-blue:hover { background:#2148e6; }
+.btn-blue:hover { background:#2148e6; transform:translateY(-2px); box-shadow:0 10px 24px rgba(49,92,255,.28); }
 .icon-rail { width:72px; background:white; border-right:1px solid var(--line); padding:18px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; position:sticky; top:0; height:100vh; }
 .rail-link { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; color:#8a8a90; font-size:18px; }
 .rail-link:hover, .rail-link.active { background:#eef1ff; color:#315cff; }
@@ -64,7 +78,8 @@ button, a { transition: all .18s ease; }
 .app-main { min-width:0; }
 .topbar { height:74px; background:white; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 34px; }
 .page { padding:32px 36px 60px; max-width:1440px; margin:auto; }
-.card { background:white; border:1px solid var(--line); border-radius:18px; }
+.card { background:white; border:1px solid var(--line); border-radius:18px; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.card:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(17,17,17,.06); }
 .metric { padding:22px; }
 .field { width:100%; border:1px solid #dedede; background:white; border-radius:11px; padding:12px 14px; outline:none; }
 .field:focus { border-color:#315cff; box-shadow:0 0 0 3px #315cff16; }
@@ -77,7 +92,9 @@ button, a { transition: all .18s ease; }
 .table td { padding:16px 18px; border-bottom:1px solid #f0f0f0; font-size:14px; }
 .status { border-radius:999px; padding:5px 9px; font-size:12px; background:#eef1ff; color:#315cff; font-weight:650; }
 
-.mobile-nav { display:none; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
 @media(max-width:900px) {
   .desktop-nav { display:none!important; }
   .app-shell { grid-template-columns:1fr; }

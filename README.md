@@ -24,7 +24,7 @@ Brand workspace
 Creator workspace
 - incoming collabs, draft status, payouts, price slider
 
-This is a front-end demo. Auth, Stripe and email are simulated. Demo login: `hashim@acme.com` / `demo`. Creator side: `creator@naano.com` / `demo`. Register accepts any 6 digit code.
+This is a working demo. Accounts, bookings, campaigns and wallet live in `data/db.json` and are served at `/data/db.json`. On Vercel the same JSON is written through the API. Demo login: `hashim@acme.com` / `demo`. Creator side: `creator@naano.com` / `demo`. Sign up creates a real account and a 6 digit code stored in that file.
 
 ## Agent capture
 

@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { avatar, campaigns, creators, trackingRows } from "@/lib/data";
-import { bookCreator } from "@/lib/store";
+import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { avatar, campaigns as seedCampaigns, creators, trackingRows } from "@/lib/data";
+import { api, useAccount } from "@/lib/client";
 
 const nav=[
   ["/app","▦","Overview"],
@@ -17,7 +18,12 @@ const nav=[
 
 function Shell({children,title,action}:{children:React.ReactNode,title:string,action?:React.ReactNode}){
   const path=usePathname();
+  const {account,refresh}=useAccount();
+  const router=useRouter();
   const active=(href:string)=>path===href||(href!=="/app"&&path.startsWith(href));
+  const company=account?.company||"Acme";
+  const initials=account?.initials||"HK";
+          const wallet=(account?.wallet??2480).toLocaleString("en-GB",{minimumFractionDigits:2,maximumFractionDigits:2});
   return <div className="app-shell">
     <aside className="icon-rail">
       <Link href="/" className="mb-4 grid h-10 w-10 place-items-center"><span className="logo-mark"><i/></span></Link>
@@ -26,15 +32,18 @@ function Shell({children,title,action}:{children:React.ReactNode,title:string,ac
     </aside>
     <div className="app-main">
       <header className="topbar">
-        <div><p className="text-xs text-[#888]">Acme workspace</p><h1 className="text-xl font-semibold tracking-tight">{title}</h1></div>
+        <div><p className="text-xs text-[#888]">{company} workspace</p><h1 className="text-xl font-semibold tracking-tight">{title}</h1></div>
         <div className="flex items-center gap-3">
-          <span className="wallet-chip">€2,480.00</span>
+          <span className="wallet-chip">€{wallet}</span>
           <span className="wallet-chip">EN</span>
           {action||<Link href="/app/campaigns/new" className="btn-blue !py-2.5 text-sm">+ New campaign</Link>}
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-[#111] text-xs text-white">HK</div>
+          <button className="btn-white !px-3 !py-2 text-xs" onClick={async()=>{await api("/api/auth/logout",{}); await refresh(); router.push("/login")}}>Log out</button>
+          <div className="grid h-9 w-9 place-items-center rounded-full bg-[#111] text-xs text-white">{initials}</div>
         </div>
       </header>
-      {children}
+      <motion.div initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{duration:.35}}>
+        {children}
+      </motion.div>
       <nav className="mobile-nav">
         {nav.slice(0,5).map(n=><Link key={n[0]} href={n[0]} className={active(n[0])?"active":""}>{n[2]}</Link>)}
       </nav>
@@ -43,11 +52,14 @@ function Shell({children,title,action}:{children:React.ReactNode,title:string,ac
 }
 
 function Overview(){
+  const {account}=useAccount();
+  const first=account?.name.split(" ")[0]||"Hashim";
+  const full=account?.name||"Hashim Khan";
   return <Shell title="Overview">
     <div className="page">
-      <p className="text-sm text-[#888]">Hello Hashim</p>
+      <p className="text-sm text-[#888]">Hello {first}</p>
       <div className="mt-2 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-        <h2 className="max-w-3xl text-3xl font-semibold tracking-[-.03em] sm:text-4xl">Here is what is happening for Hashim Khan on Naano.</h2>
+        <h2 className="max-w-3xl text-3xl font-semibold tracking-[-.03em] sm:text-4xl">Here is what is happening for {full} on Naano.</h2>
         <Link href="/app/campaigns/new" className="btn-blue shrink-0">+ New campaign</Link>
       </div>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -97,13 +109,14 @@ function Discover(){
     <div className="page">
       <div className="flex flex-col justify-between gap-3 md:flex-row"><div><h2 className="text-3xl font-semibold tracking-[-.03em]">Find your next trusted voice</h2><p className="mt-2 text-sm text-[#777]">{shown.length} vetted B2B creators ranked for Acme</p></div><div className="rounded-xl bg-[#ecf0ff] px-4 py-3 text-sm text-[#315cff]"><b>AI match</b> · Based on your ICP</div></div>
       <div className="card mt-7 grid gap-3 p-4 md:grid-cols-[1fr_190px_150px]"><input className="field" placeholder="Search by creator, topic or keyword…" value={search} onChange={e=>setSearch(e.target.value)}/><select className="field" value={vertical} onChange={e=>setVertical(e.target.value)}><option>All</option>{["sales","RevOps","devtools","product","HR-tech","fintech","marketing-ops"].map(v=><option key={v}>{v}</option>)}</select><select className="field" value={tier} onChange={e=>setTier(e.target.value)}><option>All</option><option>Micro</option><option>Mid</option><option>Top</option></select></div>
-      <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{shown.map(c=><Link href={`/app/creators/${c.id}`} className="creator-card card block" key={c.id}><div className="relative h-[180px] bg-gradient-to-br from-[#eef1ff] to-[#f4f4f4]"><img src={avatar(c.name)} alt={c.name} className="h-full w-full object-contain pt-4"/><span className="absolute right-4 top-4 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#315cff] shadow-sm">{c.fit}% fit</span></div><div className="p-5"><div className="flex items-start justify-between gap-2"><div><h3 className="text-lg font-semibold">{c.name}</h3><p className="mt-1 text-sm text-[#65656a]">{c.title}</p></div><span className="rounded bg-[#0A66C2] px-1.5 py-1 text-xs font-bold text-white">in</span></div><div className="mt-5 flex items-center gap-2 text-xs text-[#777]"><span>{(c.followers/1000).toFixed(1)}k followers</span><span>·</span><span>{c.vertical}</span></div><div className="mt-5 flex items-center justify-between border-t border-[#eee] pt-4"><span><b className="text-lg">€{c.price}</b><small className="text-[#777]"> / post</small></span><span className="btn-black !px-4 !py-2 text-xs">Book →</span></div></div></Link>)}</div>
+      <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{shown.map((c,i)=><motion.div key={c.id} initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:i*0.04,duration:.35}}><Link href={`/app/creators/${c.id}`} className="creator-card card block"><div className="relative h-[180px] bg-gradient-to-br from-[#eef1ff] to-[#f4f4f4]"><img src={avatar(c.name)} alt={c.name} className="h-full w-full object-contain pt-4"/><span className="absolute right-4 top-4 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#315cff] shadow-sm">{c.fit}% fit</span></div><div className="p-5"><div className="flex items-start justify-between gap-2"><div><h3 className="text-lg font-semibold">{c.name}</h3><p className="mt-1 text-sm text-[#65656a]">{c.title}</p></div><span className="rounded bg-[#0A66C2] px-1.5 py-1 text-xs font-bold text-white">in</span></div><div className="mt-5 flex items-center gap-2 text-xs text-[#777]"><span>{(c.followers/1000).toFixed(1)}k followers</span><span>·</span><span>{c.vertical}</span></div><div className="mt-5 flex items-center justify-between border-t border-[#eee] pt-4"><span><b className="text-lg">€{c.price}</b><small className="text-[#777]"> / post</small></span><span className="btn-black !px-4 !py-2 text-xs">Book →</span></div></div></Link></motion.div>)}</div>
     </div>
   </Shell>
 }
 
 function Profile({id}:{id:string}){
-  const c=creators.find(x=>x.id===id)||creators[0]; const [booked,setBooked]=useState(false);
+  const c=creators.find(x=>x.id===id)||creators[0]; const [booked,setBooked]=useState(false); const [campaignId,setCampaignId]=useState("q4-revenue"); const [busy,setBusy]=useState(false);
+  const {refresh}=useAccount();
   return <Shell title="Creator profile">
     <div className="page">
       <Link href="/app/creators" className="text-sm text-[#777]">← Back to creators</Link>
@@ -118,8 +131,8 @@ function Profile({id}:{id:string}){
             <p className="eyebrow">Fixed price</p>
             <p className="mt-2 text-4xl font-semibold">€{c.price}<small className="text-sm font-normal text-[#777]"> / LinkedIn post</small></p>
             <ul className="mt-6 grid gap-3 text-sm"><li>✓ One original sponsored post</li><li>✓ One round of revisions</li><li>✓ Tracked link & campaign report</li><li>✓ Creator usage rights for 30 days</li></ul>
-            <select className="field mt-6"><option>Q4 Revenue Playbook</option><option>Spring product launch</option></select>
-            <button onClick={()=>{bookCreator(c.id,"q4-revenue");setBooked(true)}} className="btn-black mt-3 w-full !rounded-xl">{booked?"Added to campaign ✓":"Book this creator →"}</button>
+            <select className="field mt-6" value={campaignId} onChange={e=>setCampaignId(e.target.value)}><option value="q4-revenue">Q4 Revenue Playbook</option><option value="spring-launch">Spring product launch</option></select>
+            <button disabled={busy} onClick={async()=>{setBusy(true); try{await api("/api/save",{kind:"booking",creatorId:c.id,campaignId,fee:c.price}); setBooked(true); await refresh();} finally{setBusy(false)}}} className="btn-black mt-3 w-full !rounded-xl">{booked?"Added to campaign ✓":busy?"Saving…":"Book this creator →"}</button>
             <p className="mt-4 text-center text-xs text-[#888]">You won&apos;t be charged yet</p>
           </div>
         </aside>
@@ -130,7 +143,12 @@ function Profile({id}:{id:string}){
 
 function NewCampaign(){
   const router=useRouter(); const [method,setMethod]=useState<"ai"|"team"|"link"|null>(null); const [loading,setLoading]=useState(false); const [generated,setGenerated]=useState(false);
-  const generate=()=>{setLoading(true);setTimeout(()=>{setLoading(false);setGenerated(true)},900)};
+  const [product,setProduct]=useState("Acme Signals");
+  const save=async()=>{
+    await api("/api/save",{kind:"campaign",name:`${product} campaign`,product,method:method||"ai",brief:"Position Acme Signals as the fastest way for modern revenue teams to uncover high-intent buying signals and build pipeline.",budget:900});
+    router.push("/app/campaigns");
+  };
+  const generate=()=>{setLoading(true);setTimeout(()=>{setLoading(false);setGenerated(true)},700)};
   return <Shell title="Create campaign">
     <div className="page max-w-[1000px]">
       <p className="eyebrow">Campaign brief builder</p>
@@ -142,23 +160,27 @@ function NewCampaign(){
         ))}
       </div>}
       {method==="ai" && <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="card p-7"><div className="grid gap-5"><label className="text-sm font-medium">Product<input className="field mt-2" defaultValue="Acme Signals"/></label><label className="text-sm font-medium">Ideal customer profile<textarea className="field mt-2 min-h-24" defaultValue="Revenue leaders at 50–500 person B2B SaaS companies"/></label><label className="text-sm font-medium">Offer<textarea className="field mt-2 min-h-20" defaultValue="14-day free trial and a personalized revenue workflow audit"/></label><label className="text-sm font-medium">CTA URL<input className="field mt-2" defaultValue="https://acme.com/signals"/></label></div><button type="button" onClick={generate} className="btn-black mt-6 !rounded-xl">{loading?"✦ Writing your brief…":"✦ Generate campaign brief"}</button></div>
-        <aside className={`card p-6 ${generated?"border-[#315cff]":""}`}><p className="eyebrow">AI draft</p>{generated?<><h3 className="mt-4 font-semibold">Campaign objective</h3><p className="mt-2 text-sm leading-6 text-[#666]">Position Acme Signals as the fastest way for modern revenue teams to uncover high-intent buying signals and build pipeline.</p><h3 className="mt-6 font-semibold">Creator guidelines</h3><ul className="mt-2 grid gap-2 text-sm leading-5 text-[#666]"><li>• Open with a real workflow pain</li><li>• Share one actionable insight</li><li>• Explain the 14-day trial clearly</li><li>• Keep the tone personal and practical</li></ul><button onClick={()=>router.push("/app/campaigns")} className="btn-black mt-7 w-full !rounded-xl">Save & find creators →</button></>:<div className="mt-16 text-center text-sm text-[#999]"><span className="text-3xl">✦</span><p className="mt-3">Your objectives and creator guidelines will appear here.</p></div>}</aside>
+        <div className="card p-7"><div className="grid gap-5"><label className="text-sm font-medium">Product<input className="field mt-2" value={product} onChange={e=>setProduct(e.target.value)}/></label><label className="text-sm font-medium">Ideal customer profile<textarea className="field mt-2 min-h-24" defaultValue="Revenue leaders at 50–500 person B2B SaaS companies"/></label><label className="text-sm font-medium">Offer<textarea className="field mt-2 min-h-20" defaultValue="14-day free trial and a personalized revenue workflow audit"/></label><label className="text-sm font-medium">CTA URL<input className="field mt-2" defaultValue="https://acme.com/signals"/></label></div><button type="button" onClick={generate} className="btn-black mt-6 !rounded-xl">{loading?"✦ Writing your brief…":"✦ Generate campaign brief"}</button></div>
+        <aside className={`card p-6 ${generated?"border-[#315cff]":""}`}><p className="eyebrow">AI draft</p>{generated?<><h3 className="mt-4 font-semibold">Campaign objective</h3><p className="mt-2 text-sm leading-6 text-[#666]">Position Acme Signals as the fastest way for modern revenue teams to uncover high-intent buying signals and build pipeline.</p><h3 className="mt-6 font-semibold">Creator guidelines</h3><ul className="mt-2 grid gap-2 text-sm leading-5 text-[#666]"><li>• Open with a real workflow pain</li><li>• Share one actionable insight</li><li>• Explain the 14-day trial clearly</li><li>• Keep the tone personal and practical</li></ul><button onClick={save} className="btn-black mt-7 w-full !rounded-xl">Save & find creators →</button></>:<div className="mt-16 text-center text-sm text-[#999]"><span className="text-3xl">✦</span><p className="mt-3">Your objectives and creator guidelines will appear here.</p></div>}</aside>
       </div>}
-      {method==="team" && <div className="card mt-8 p-8"><h3 className="text-2xl font-semibold">Onboarding with Alexis</h3><p className="mt-3 max-w-xl leading-7 text-[#666]">We shape your campaign together. You leave with a shortlist, a brief and a launch date.</p><button onClick={()=>router.push("/app/campaigns")} className="btn-blue mt-6">Book a free call →</button></div>}
-      {method==="link" && <div className="card mt-8 p-8"><h3 className="text-2xl font-semibold">Your brief, your campaign</h3><p className="mt-3 text-[#666]">Paste a Notion or Google Docs link. We build the campaign around it.</p><input className="field mt-6" placeholder="https://notion.so/your-brief"/><button onClick={()=>router.push("/app/campaigns")} className="btn-black mt-4">Import brief →</button></div>}
+      {method==="team" && <div className="card mt-8 p-8"><h3 className="text-2xl font-semibold">Onboarding with Alexis</h3><p className="mt-3 max-w-xl leading-7 text-[#666]">We shape your campaign together. You leave with a shortlist, a brief and a launch date.</p><button onClick={save} className="btn-blue mt-6">Book a free call →</button></div>}
+      {method==="link" && <div className="card mt-8 p-8"><h3 className="text-2xl font-semibold">Your brief, your campaign</h3><p className="mt-3 text-[#666]">Paste a Notion or Google Docs link. We build the campaign around it.</p><input className="field mt-6" placeholder="https://notion.so/your-brief"/><button onClick={save} className="btn-black mt-4">Import brief →</button></div>}
     </div>
   </Shell>
 }
 
 function CampaignList(){
+  const [rows,setRows]=useState(seedCampaigns.map(c=>({...c,userId:"u_hashim",method:"ai",brief:"",createdAt:""})));
+  useEffect(()=>{fetch("/api/save").then(r=>r.json()).then(d=>{if(d.campaigns?.length) setRows(d.campaigns)}).catch(()=>{})},[]);
   return <Shell title="Campaigns" action={<Link className="btn-blue text-sm" href="/app/campaigns/new">+ New campaign</Link>}>
-    <div className="page"><div className="grid gap-4">{campaigns.map(c=><Link href={`/app/campaigns/${c.id}`} className="card grid items-center gap-5 p-6 hover:border-[#bbb] md:grid-cols-[1.4fr_.7fr_.6fr_.6fr_30px]" key={c.id}><div><span className="status">{c.status}</span><h3 className="mt-3 text-lg font-semibold">{c.name}</h3><p className="mt-1 text-sm text-[#777]">{c.product}</p></div><div><p className="text-xs text-[#888]">CREATORS</p><b className="mt-1 block">{c.creators}</b></div><div><p className="text-xs text-[#888]">BUDGET</p><b className="mt-1 block">€{c.budget}</b></div><div><p className="text-xs text-[#888]">PROGRESS</p><div className="mt-2 h-1.5 rounded bg-[#eee]"><div className="h-full rounded bg-[#315cff]" style={{width:`${c.progress}%`}}/></div></div><span>→</span></Link>)}</div></div>
+    <div className="page"><div className="grid gap-4">{rows.map(c=><Link href={`/app/campaigns/${c.id}`} className="card grid items-center gap-5 p-6 hover:border-[#bbb] md:grid-cols-[1.4fr_.7fr_.6fr_.6fr_30px]" key={c.id}><div><span className="status">{c.status}</span><h3 className="mt-3 text-lg font-semibold">{c.name}</h3><p className="mt-1 text-sm text-[#777]">{c.product}</p></div><div><p className="text-xs text-[#888]">CREATORS</p><b className="mt-1 block">{c.creators}</b></div><div><p className="text-xs text-[#888]">BUDGET</p><b className="mt-1 block">€{c.budget}</b></div><div><p className="text-xs text-[#888]">PROGRESS</p><div className="mt-2 h-1.5 rounded bg-[#eee]"><div className="h-full rounded bg-[#315cff]" style={{width:`${c.progress}%`}}/></div></div><span>→</span></Link>)}</div></div>
   </Shell>
 }
 
 function CampaignDetail({id}:{id:string}){
-  const c=campaigns.find(x=>x.id===id)||campaigns[0]; const statuses=["Invited","Draft ready","Scheduled","Live","Paid"];
+  const [c,setC]=useState(seedCampaigns.find(x=>x.id===id)||{id,name:"Campaign",product:"New",creators:0,status:"Draft",budget:0,progress:8});
+  useEffect(()=>{fetch("/api/save").then(r=>r.json()).then(d=>{const found=d.campaigns?.find((x:{id:string})=>x.id===id); if(found) setC(found)}).catch(()=>{})},[id]);
+  const statuses=["Invited","Draft ready","Scheduled","Live","Paid"];
   return <Shell title={c.name}>
     <div className="page">
       <div className="card p-7"><div className="flex flex-wrap items-center justify-between gap-4"><div><span className="status">{c.status}</span><h2 className="mt-3 text-2xl font-semibold">{c.product}</h2></div><button className="btn-white">Campaign brief ↗</button></div><div className="mt-8 grid grid-cols-5 gap-2">{statuses.map((s,i)=><div key={s}><div className={`h-2 rounded-full ${i<3?"bg-[#315cff]":"bg-[#eee]"}`}/><p className="mt-2 text-xs text-[#777]">{s}</p></div>)}</div></div>
@@ -172,7 +194,7 @@ function Collaborations(){
     <div className="page">
       <div className="card overflow-hidden"><table className="table"><thead><tr><th>Creator</th><th>Campaign</th><th>Status</th><th>Deliverable</th><th>Fee</th></tr></thead>
       <tbody>
-        {creators.slice(0,6).map((c,i)=><tr key={c.id}><td><b>{c.name}</b></td><td>{campaigns[i%3].name}</td><td><span className="status">{["Draft ready","Live","Invited","Scheduled","Paid","Invited"][i]}</span></td><td>LinkedIn post</td><td>€{c.price}</td></tr>)}
+        {creators.slice(0,6).map((c,i)=><tr key={c.id}><td><b>{c.name}</b></td><td>{seedCampaigns[i%3].name}</td><td><span className="status">{["Draft ready","Live","Invited","Scheduled","Paid","Invited"][i]}</span></td><td>LinkedIn post</td><td>€{c.price}</td></tr>)}
       </tbody></table></div>
     </div>
   </Shell>
@@ -199,15 +221,18 @@ function Messages(){
 }
 
 function Billing(){
+  const {account,refresh}=useAccount();
   const [amount,setAmount]=useState("500");
+  const [busy,setBusy]=useState(false);
+  const wallet=account?.wallet??2480;
   return <Shell title="Billing">
     <div className="page max-w-[720px]">
       <div className="card p-8">
         <p className="eyebrow">Wallet</p>
-        <p className="mt-3 text-5xl font-semibold tracking-tight">€2,480.00</p>
-        <p className="mt-3 text-sm text-[#777]">One-time deposit. Use it across all campaigns. No subscription on Self-Serve.</p>
+        <p className="mt-3 text-5xl font-semibold tracking-tight">€{wallet.toLocaleString()}</p>
+        <p className="mt-3 text-sm text-[#777]">Saved in /data/db.json. One-time deposit, used across campaigns.</p>
         <label className="mt-8 block text-sm font-medium">Add budget (€)<input className="field mt-2" value={amount} onChange={e=>setAmount(e.target.value)}/></label>
-        <button className="btn-blue mt-5">Add €{amount} →</button>
+        <button disabled={busy} onClick={async()=>{setBusy(true); try{await api("/api/save",{kind:"wallet",amount:Number(amount)}); await refresh();} finally{setBusy(false)}}} className="btn-blue mt-5">{busy?"Saving…":`Add €${amount} →`}</button>
       </div>
       <div className="card mt-5 p-8">
         <h3 className="font-semibold">Plan</h3>

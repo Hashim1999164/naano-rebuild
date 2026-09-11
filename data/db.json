@@ -1,0 +1,121 @@
+{
+  "users": [
+    {
+      "id": "u_hashim",
+      "name": "Hashim Khan",
+      "email": "hashim@acme.com",
+      "passwordHash": "b7b87e4cadbbdd877656abec5db1f8c184cbad7321803f405c54e05820258a7f",
+      "role": "brand",
+      "company": "Acme",
+      "source": "LinkedIn",
+      "wallet": 2480,
+      "verified": true,
+      "createdAt": "2026-09-11T10:40:00.000Z"
+    },
+    {
+      "id": "u_creator",
+      "name": "Thomas Higadère",
+      "email": "creator@naano.com",
+      "passwordHash": "b7b87e4cadbbdd877656abec5db1f8c184cbad7321803f405c54e05820258a7f",
+      "role": "creator",
+      "company": null,
+      "source": "LinkedIn",
+      "wallet": 1240,
+      "price": 180,
+      "verified": true,
+      "createdAt": "2026-09-11T10:41:00.000Z"
+    }
+  ],
+  "sessions": [],
+  "codes": [],
+  "bookings": [
+    {
+      "id": "b_thomas_q4",
+      "userId": "u_hashim",
+      "creatorId": "thomas-higadere",
+      "campaignId": "q4-revenue",
+      "status": "Draft ready",
+      "fee": 320,
+      "createdAt": "2026-09-10T09:00:00.000Z"
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "q4-revenue",
+      "userId": "u_hashim",
+      "name": "Q4 Revenue Playbook",
+      "product": "Acme Revenue OS",
+      "creators": 4,
+      "status": "Live",
+      "budget": 1280,
+      "progress": 78,
+      "method": "ai",
+      "brief": "Position Acme Signals as the fastest way for modern revenue teams to uncover high-intent buying signals.",
+      "createdAt": "2026-09-01T12:00:00.000Z"
+    },
+    {
+      "id": "spring-launch",
+      "userId": "u_hashim",
+      "name": "Spring product launch",
+      "product": "Acme Signals",
+      "creators": 6,
+      "status": "In progress",
+      "budget": 1840,
+      "progress": 45,
+      "method": "team",
+      "brief": "",
+      "createdAt": "2026-09-05T12:00:00.000Z"
+    },
+    {
+      "id": "revops-report",
+      "userId": "u_hashim",
+      "name": "State of RevOps 2026",
+      "product": "Acme Research",
+      "creators": 3,
+      "status": "Draft",
+      "budget": 760,
+      "progress": 18,
+      "method": "link",
+      "brief": "",
+      "createdAt": "2026-09-08T12:00:00.000Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "userId": "u_hashim",
+      "from": "Thomas Higadère",
+      "body": "Draft is ready for Q4 Revenue Playbook. Can you review the hook?",
+      "createdAt": "2026-09-11T08:12:00.000Z"
+    },
+    {
+      "id": "m2",
+      "userId": "u_hashim",
+      "from": "Naano team",
+      "body": "Want a strategist on the Spring launch? 15 min, free.",
+      "createdAt": "2026-09-11T09:40:00.000Z"
+    }
+  ],
+  "collabs": [
+    {
+      "id": "c1",
+      "creatorId": "u_creator",
+      "brand": "Acme",
+      "title": "Q4 Revenue Playbook",
+      "brief": "Share a practical lesson about finding hidden revenue signals in your pipeline.",
+      "fee": 320,
+      "status": "Draft due Sep 15",
+      "ready": false
+    },
+    {
+      "id": "c2",
+      "creatorId": "u_creator",
+      "brand": "Attio",
+      "title": "Modern CRM launch",
+      "brief": "Original LinkedIn post. Publish by Sep 24.",
+      "fee": 280,
+      "status": "New invitation",
+      "ready": false
+    }
+  ]
+}

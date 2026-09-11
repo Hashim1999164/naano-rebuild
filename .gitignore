@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # Keep .agent-logs in git. 8x needs those files.
+
+# Runtime JSON copy. Source of truth is data/db.json
+/public/data/db.json
