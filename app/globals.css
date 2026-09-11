@@ -41,6 +41,8 @@ button, a { transition: all .18s ease; }
 .logo-mark:before { left:1px; }.logo-mark:after { right:1px; transform:rotate(25deg); }
 .logo-mark i { position:absolute; width:4px; height:4px; border-radius:50%; background:#315cff; z-index:2; left:13px; top:5px; }
 
+.btn-black { background:#111; color:white; border:1px solid #111; border-radius:999px; padding:12px 20px; font-weight:650; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:10px; }
+.btn-black:hover { background:#303030; transform:translateY(-1px); }
 .btn-blue { background:#315cff; color:white; border:1px solid #315cff; border-radius:999px; padding:12px 20px; font-weight:650; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
 .btn-blue:hover { background:#2148e6; }
 .icon-rail { width:72px; background:white; border-right:1px solid var(--line); padding:18px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; position:sticky; top:0; height:100vh; }
@@ -52,7 +54,6 @@ button, a { transition: all .18s ease; }
 .badge { border-radius:999px; padding:4px 8px; font-size:11px; font-weight:700; }
 .badge-blocked { background:#fff4e5; color:#c47b17; }
 .badge-suggested { background:#eef1ff; color:#315cff; }
-.btn-black:hover { background:#303030; transform:translateY(-1px); }
 .btn-white { background:white; color:#111; border:1px solid #e8e8e8; border-radius:999px; padding:11px 18px; font-weight:600; cursor:pointer; }
 .eyebrow { text-transform:uppercase; font-size:11px; letter-spacing:.15em; font-weight:700; color:#727278; }
 
