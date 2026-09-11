@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export type Account = {
   id: string;
@@ -46,7 +47,8 @@ export function AccountProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     }
   };
-  useEffect(() => { refresh(); }, []);
+  const path = usePathname();
+  useEffect(() => { refresh(); }, [path]);
   return <AccountCtx.Provider value={{ account, loading, refresh }}>{children}</AccountCtx.Provider>;
 }
 

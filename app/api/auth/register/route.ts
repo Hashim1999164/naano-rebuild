@@ -14,7 +14,9 @@ export async function POST(req: Request) {
   const password = String(body.password || "");
   const role = body.role === "creator" ? "creator" : "brand";
   const source = String(body.source || "LinkedIn");
-  const company = role === "brand" ? String(body.company || "My company") : null;
+  const company = role === "brand"
+    ? String(body.company || (email.split("@")[1]?.split(".")[0] || "brand").replace(/^./, (c: string) => c.toUpperCase()))
+    : null;
 
   if (!email || !password || password.length < 4 || !first) {
     return NextResponse.json({ error: "Fill in your name, email and a password." }, { status: 400 });
@@ -38,7 +40,7 @@ export async function POST(req: Request) {
       role,
       company,
       source,
-      wallet: role === "brand" ? 0 : 0,
+      wallet: role === "brand" ? 500 : 0,
       price: role === "creator" ? 180 : undefined,
       verified: true,
     },

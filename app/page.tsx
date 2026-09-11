@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FadeIn } from "@/components/MotionRoot";
 
 export default function Home() {
   return <main>
@@ -20,6 +21,7 @@ export default function Home() {
       </div>
     </section>
     <section id="creators" className="mx-auto max-w-[1180px] px-6 py-24">
+      <FadeIn>
       <p className="eyebrow">For creators</p>
       <h2 className="mt-4 max-w-[640px] text-4xl font-semibold tracking-[-.04em] sm:text-5xl">Get paid for the LinkedIn posts you already know how to write.</h2>
       <p className="mt-5 max-w-[620px] leading-7 text-[#666]">Set a fixed price per post, pick the brands you want to work with, and get paid after the post is approved. No media kit ping pong.</p>
@@ -29,6 +31,7 @@ export default function Home() {
         ))}
       </div>
       <Link className="btn-black mt-10 inline-flex" href="/register">Join as a creator →</Link>
+      </FadeIn>
     </section>
     <section id="agencies" className="bg-[#f7f7f6] px-6 py-24">
       <div className="mx-auto max-w-[1180px] grid gap-10 lg:grid-cols-2 lg:items-center">
@@ -54,11 +57,13 @@ export default function Home() {
       <div className="mx-auto flex max-w-[1100px] flex-wrap items-center justify-center gap-x-12 gap-y-6 text-xl font-bold tracking-tight text-[#59595d]"><span>ringover</span><span>attio</span><span>La Growth Machine</span><span>lemlist</span><span>ChatSEO</span><span>Abyssale</span><span>BlogSEO</span></div>
     </section>
     <section id="how" className="mx-auto max-w-[1180px] px-6 py-28">
+      <FadeIn>
       <p className="eyebrow text-center">Built for B2B outcomes</p>
       <h2 className="mx-auto mt-4 max-w-[700px] text-center text-4xl font-semibold tracking-[-.04em] sm:text-5xl">From creator discovery to measurable pipeline.</h2>
       <div className="mt-16 grid gap-5 md:grid-cols-3">
         {[["01","Find the right voice","Search vetted creators by audience, expertise, reach and brand fit."],["02","Launch in days","Share one brief, collaborate on drafts and book fixed-price posts."],["03","Prove every result","See clicks, leads and attributed pipeline for every creator and post."]].map(x=><div className="card p-8" key={x[0]}><span className="text-sm text-[#315cff]">{x[0]}</span><h3 className="mt-14 text-2xl font-semibold">{x[1]}</h3><p className="mt-3 leading-6 text-[#6e6e73]">{x[2]}</p></div>)}
       </div>
+      </FadeIn>
     </section>
     <section id="companies" className="bg-[#f7f7f6] px-6 py-24">
       <div className="mx-auto max-w-[1100px] grid gap-10 lg:grid-cols-2 lg:items-center">

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { api } from "@/lib/client";
+import { api, useAccount } from "@/lib/client";
 
 function LoginForm(){
   const [email,setEmail]=useState("hashim@acme.com");
@@ -12,6 +12,7 @@ function LoginForm(){
   const [busy,setBusy]=useState(false);
   const router=useRouter();
   const next=useSearchParams().get("next");
+  const {refresh}=useAccount();
 
   return <main className="clouds flex min-h-screen items-center justify-center px-5 py-12">
     <motion.div initial={{opacity:0,y:24,scale:.98}} animate={{opacity:1,y:0,scale:1}} transition={{duration:.5,ease:[.22,1,.36,1]}} className="w-full max-w-[450px] rounded-[24px] border border-white bg-white/95 p-8 shadow-xl shadow-blue-900/5 sm:p-11">
@@ -22,8 +23,8 @@ function LoginForm(){
         e.preventDefault(); setError(""); setBusy(true);
         try {
           const data = await api<{user:{role:string}}>("/api/auth/login", {email, password});
+          await refresh();
           router.push(next || (data.user.role==="creator"?"/creator":"/app"));
-          router.refresh();
         } catch(err) {
           setError(err instanceof Error ? err.message : "Could not sign in");
         } finally { setBusy(false); }

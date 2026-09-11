@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { api } from "@/lib/client";
+import { api, useAccount } from "@/lib/client";
 
 function RegisterForm() {
   const [role,setRole]=useState<"brand"|"creator"|null>(null);
@@ -14,6 +14,7 @@ function RegisterForm() {
   const [busy,setBusy]=useState(false);
   const [form,setForm]=useState({first:"",last:"",email:"",password:"",source:"LinkedIn"});
   const router=useRouter();
+  const {refresh}=useAccount();
 
   const submit=async (e:React.FormEvent)=>{
     e.preventDefault(); setError(""); setBusy(true);
@@ -23,8 +24,8 @@ function RegisterForm() {
         setSent(data.code); setMode("code"); return;
       }
       await api("/api/auth/register",{email:form.email,code},"PUT");
+      await refresh();
       router.push(role==="creator"?"/creator":"/app");
-      router.refresh();
     } catch(err) {
       setError(err instanceof Error ? err.message : "Could not continue");
     } finally { setBusy(false); }

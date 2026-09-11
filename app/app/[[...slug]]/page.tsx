@@ -34,6 +34,7 @@ function Shell({children,title,action}:{children:React.ReactNode,title:string,ac
       <header className="topbar">
         <div><p className="text-xs text-[#888]">{company} workspace</p><h1 className="text-xl font-semibold tracking-tight">{title}</h1></div>
         <div className="flex items-center gap-3">
+          <a href="/data/db.json" target="_blank" rel="noreferrer" className="wallet-chip">JSON</a>
           <span className="wallet-chip">€{wallet}</span>
           <span className="wallet-chip">EN</span>
           {action||<Link href="/app/campaigns/new" className="btn-blue !py-2.5 text-sm">+ New campaign</Link>}
@@ -190,11 +191,16 @@ function CampaignDetail({id}:{id:string}){
 }
 
 function Collaborations(){
+  const [rows,setRows]=useState<{id:string;creatorId:string;campaignId:string;status:string;fee:number}[]>([]);
+  useEffect(()=>{fetch("/api/save").then(r=>r.json()).then(d=>{if(d.bookings?.length) setRows(d.bookings)}).catch(()=>{})},[]);
+  const campaignName=(id:string)=>seedCampaigns.find(c=>c.id===id)?.name||id;
+  const creatorName=(id:string)=>creators.find(c=>c.id===id)?.name||id;
+  const shown=rows.length?rows:creators.slice(0,6).map((c,i)=>({id:c.id,creatorId:c.id,campaignId:seedCampaigns[i%3].id,status:["Draft ready","Live","Invited","Scheduled","Paid","Invited"][i],fee:c.price}));
   return <Shell title="Collaborations">
     <div className="page">
       <div className="card overflow-hidden"><table className="table"><thead><tr><th>Creator</th><th>Campaign</th><th>Status</th><th>Deliverable</th><th>Fee</th></tr></thead>
       <tbody>
-        {creators.slice(0,6).map((c,i)=><tr key={c.id}><td><b>{c.name}</b></td><td>{seedCampaigns[i%3].name}</td><td><span className="status">{["Draft ready","Live","Invited","Scheduled","Paid","Invited"][i]}</span></td><td>LinkedIn post</td><td>€{c.price}</td></tr>)}
+        {shown.map((row)=><tr key={row.id}><td><b>{creatorName(row.creatorId)}</b></td><td>{campaignName(row.campaignId)}</td><td><span className="status">{row.status}</span></td><td>LinkedIn post</td><td>€{row.fee}</td></tr>)}
       </tbody></table></div>
     </div>
   </Shell>
