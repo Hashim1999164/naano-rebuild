@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/8x-capture.py"
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": ".cursor/hooks/8x-capture.py"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/8x-capture.py"
+      }
+    ]
+  }
+}

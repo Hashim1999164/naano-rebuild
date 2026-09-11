@@ -1,0 +1,1 @@
+{"hook_event_name":"afterAgentResponse","response":"Second canary landed. Same hook file, new process. That is the across-session check.","timestamp":"2026-09-11T10:39:41.000Z","model":"cursor-grok-4.6"}

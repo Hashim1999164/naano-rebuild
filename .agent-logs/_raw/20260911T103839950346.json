@@ -1,0 +1,1 @@
+{"hook_event_name":"afterAgentResponse","response":"Capture is on. Tool is Cursor, model is cursor-grok-4.6. Prompts and final replies go into naano-rebuild/.agent-logs/.","timestamp":"2026-09-11T10:38:21.000Z","model":"cursor-grok-4.6"}
